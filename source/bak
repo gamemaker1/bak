@@ -1,0 +1,295 @@
+#!/usr/bin/env bash
+
+# 
+# == bak 0.1.0 ==
+# 
+# A backup tool (written in bash)
+# 
+# -- DEPENDENCIES --
+# 
+# * bash
+# * coreutils
+# * tar
+# * zip
+# * unzip
+# 
+# -- USAGE --
+# 
+# bak [options] <files/dirs to backup>...
+# 
+# -c, --compress-using               [default: tar-gz] tar-gz, tar-xz, tar-zst, tar-bzip2, zip
+# 	Compression format to use while creating the backup
+# -C, --compute-checksums-using     [default: sha256] md5, sha1, sha224, sha384, sha256, sha512, b2
+# 	Compute checksums for all files in the archive
+# -f, --file-name                    [default: <date>.bak.<extension>]
+# 	Name of resulting backup file
+# -d, --backup-directory             [default: ~/Backups]
+# 	Directory to place the resulting backup file in
+# -e, --exclude-pattern <file/dir name/pattern to exclude>
+# 	Pattern or name of file/dir to exclude from the archive
+# 
+# -- LICENSE --
+# 
+# This project is licensed under AGPL 3.0.
+# 
+
+#
+# -- UTILS --
+#
+
+# ANSI escape sequences for colors and styles
+black="\033[30m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+blue="\033[34m"
+magenta="\033[35m"
+cyan="\033[36m"
+white="\033[37m"
+bold="\033[1m"
+normal="\033[0m"
+
+# Print alias
+function print {
+	if test -t 1 ; then
+		echo -e "$*"
+	else
+		output="$*"
+		echo "$output" | sed 's/\\033\[[0-9]*[JKmsu]//g'
+	fi
+}
+
+#
+# -- OPERATIONS --
+#
+
+# Print usage
+function help {
+	print ""
+	print "${bold}${yellow} USAGE${normal}${bold}: bak [options] <files/dirs to backup>... ${normal}"
+	print ""
+
+	print "${bold}${cyan}  -h, --help${normal}"
+	print "     Print this help menu and exit"
+	print "${bold}${cyan}  -v, --version${normal}"
+	print "     Print the version number and exit"
+
+	print ""
+
+	print "${bold}${cyan}  -c, --compress-using${normal}${bold} <format>          ${green}[default: tar-gz]${normal} ${bold}tar-gz, tar-xz, tar-zst, tar-bz, zip${normal}"
+	print "     Compression format to use while creating the backup"
+
+	print "${bold}${cyan}  -C, --compute-checksums-using${normal}${bold} <type>  ${green}[default: sha256]${normal} ${bold}md5, sha1, sha224, sha384, sha256, sha512, b2${normal}"
+	print "     Compute checksums for all files in the archive"
+
+	print "${bold}${cyan}  -f, --file-name${normal}${bold} <file-name>            ${green}[default: <date>.bak.<extension>]${normal}"
+	print "     Specify the name of the created backup file"
+
+	print "${bold}${cyan}  -d, --backup-directory${normal}${bold} <path-to-dir>   ${green}[default: $HOME/Backups]${normal}"
+	print "     Specify the path to directory to put the backup file in"
+
+	print "${bold}${cyan}  -e, --exclude-pattern${normal}${bold} <file/dir name/pattern to exclude>${normal}"
+	print "     Specify patterns or names of files/dirs to exclude from the archive; if you want them"
+	print "     to be ignored recursively (across subdirectories), make sure you prefix it with '**/'"
+
+	print ""
+	print "${bold}  For more information, view the man page for this program (${cyan}man bak${normal}${bold}).${normal}"
+}
+
+# Main function
+function main {
+	# Parse options
+
+	# Initialise out variables with default values
+	backup_dir="$HOME/Backups"
+	compression_format="tar-gz"
+	checksum_type="sha256"
+	file_name=$(date --iso-8601=seconds).bak
+	file_name=$(echo "$file_name" | sed s/:/_/g)
+	files_to_backup=()
+	files_to_exclude=()
+
+	# Loop until we get all the args sorted
+	while [[ "$#" -gt 0 ]]; do
+		case $1 in
+			-h|--help) help; exit 0;;
+			-v|--version) exit 0;;
+			-c|--compress-using) compression_format="$2"; shift ;;
+			-C|--compute-checksums-using) checksum_type="$2"; shift ;;
+			-f|--file-name) file_name="$2"; custom_file_name_specified=1; shift ;;
+			-d|--backup-directory) backup_dir="$2"; shift ;;
+			-e|--exclude-pattern) files_to_exclude+=("$2"); shift ;;
+			*) files_to_backup+=("$1");;
+		esac
+		shift
+	done
+
+	print ""
+
+	# Check if the user has specified any files to backup
+	if [[ -z "$files_to_backup" ]]
+	then
+		print "${bold} ${red}::${normal}${bold} No files/directories specified for backup ${normal}"
+		exit 1
+	fi
+
+	# Ensure backup directory exists
+	mkdir -p "$backup_dir"
+
+	# Based on the compression format, append a file extension to the archive (if
+	# the user hasn't mentioned a file name themself)
+	if [[ -z "$custom_file_name_specified" ]]
+	then
+		file_name="$file_name.$(echo $compression_format | sed s/-/./g)"
+	fi
+
+	# Print out a summary
+	print "${bold} ${blue}::${normal}${bold} Backup summary: ${normal}"
+	print "${bold}   ${yellow}*${normal}${bold} Path to backup file    :${normal} $backup_dir/$file_name"
+	print "${bold}   ${yellow}*${normal}${bold} Path to checksum file  :${normal} $backup_dir/$file_name.${checksum_type}sum"
+	print "${bold}   ${yellow}*${normal}${bold} Compression format     :${normal} $compression_format"
+	print "${bold}   ${yellow}*${normal}${bold} Checksum type          :${normal} $checksum_type"
+	print "${bold}   ${yellow}*${normal}${bold} Files to backup        :${normal} ${files_to_backup[@]}"
+	print ""
+	print "${bold} ${blue}::${normal}${bold} Commencing backup... ${normal}"
+
+	# Backup:
+	# Piece together the command based on what compression format we are using
+	case "$compression_format" in
+		tar-gz)
+			compress_command="tar"
+			for exclude_pattern in "${files_to_exclude[@]}"
+			do
+				compress_command+=" --exclude $exclude_pattern"
+			done
+			compress_command+=" --create --force-local --gzip -f"
+			compress_command+=" '$backup_dir/$file_name' ${files_to_backup[@]}"
+			;;
+		tar-xz)
+			compress_command="tar"
+			for exclude_pattern in "${files_to_exclude[@]}"
+			do
+				compress_command+=" --exclude $exclude_pattern"
+			done
+			compress_command+=" --create --force-local --xz -f"
+			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
+			;;
+		tar-zst)
+			compress_command="tar"
+			for exclude_pattern in "${files_to_exclude[@]}"
+			do
+				compress_command+=" --exclude $exclude_pattern"
+			done
+			compress_command+=" --create --force-local --zstd -f"
+			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
+			;;
+		tar-bz)
+			compress_command="tar"
+			for exclude_pattern in "${files_to_exclude[@]}"
+			do
+				compress_command+=" --exclude $exclude_pattern"
+			done
+			compress_command+=" --create --force-local --bzip2 -f"
+			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
+			;;
+		zip)
+			compress_command="zip"
+			compress_command+=" -qr9"
+			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
+			for exclude_pattern in "${files_to_exclude[@]}"
+			do
+				compress_command+=" -x $(echo $exclude_pattern | sed s/*/\\*/g)"
+			done
+			;;
+	esac
+
+	# If the compress_command variable is blank, the user specified an invalid compression format
+	if [[ -z "$compress_command" ]]
+	then
+		print "${bold} ${red}::${normal}${bold} Invalid compression format (use tar-gz, tar-xz, tar-zst, tar-bz, zip) ${normal}"
+		exit 1
+	fi
+
+	# Run the command
+	$compress_command
+	# Check if it worked and tell the user
+	if [[ 0 == "$?" ]]
+	then
+		print "${bold} ${green}::${normal}${bold} Backup completed successfully; backup located at ${cyan}$backup_dir/$file_name${normal}${bold}.${normal}"
+	else
+		print "${bold} ${red}::${normal}${bold} Backup failed! ${normal}"
+		exit 2
+	fi
+
+	# Checksums
+	print "${bold} ${blue}::${normal}${bold} Computing checksums... ${normal}"
+
+	# Store the checksum in a *.<type>sum file along with the backup file
+	checksum_path="$backup_dir/$file_name.${checksum_type}sum"
+
+	# Piece together the command based on the checksum type
+	case "$checksum_type" in
+		md5) checksum_command="md5sum -b";;
+		sha1) checksum_command="sha1sum -b";;
+		sha224) checksum_command="sha224sum -b";;
+		sha384) checksum_command="sha384sum -b";;
+		sha256) checksum_command="sha256sum -b";;
+		sha512) checksum_command="sha512sum -b";;
+		b2) checksum_command="b2sum -b";;
+	esac
+
+	# If the checksum_command variable is blank, the user specified an invalid checksum type
+	if [[ -z "$checksum_command" ]]
+	then
+		print "${bold} ${red}::${normal}${bold} Invalid checksum type (use md5, sha256, sha512) ${normal}"
+		exit 1
+	fi
+
+	# Based on the type of archive, compute the checksum for each file
+	case "$compression_format" in
+		tar-gz)
+			tar --extract --gzip --to-command 'if [[ "$TAR_FILETYPE" == f ]]; then sum="$('"$checksum_command"')"; echo "${sum%-}${TAR_FILENAME}"; fi' < "$backup_dir/$file_name" > "$checksum_path"
+			status="$?"
+			;;
+		tar-xz)
+			tar --extract --xz --to-command 'if [[ "$TAR_FILETYPE" == f ]]; then sum="$('"$checksum_command"')"; echo "${sum%-}${TAR_FILENAME}"; fi' < "$backup_dir/$file_name" > "$checksum_path"
+			status="$?"
+			;;
+		tar-zst)
+			tar --extract --zstd --to-command 'if [[ "$TAR_FILETYPE" == f ]]; then sum="$('"$checksum_command"')"; echo "${sum%-}${TAR_FILENAME}"; fi' < "$backup_dir/$file_name" > "$checksum_path"
+			status="$?"
+			;;
+		tar-bz)
+			tar --extract --bzip2 --to-command 'if [[ "$TAR_FILETYPE" == f ]]; then sum="$('"$checksum_command"')"; echo "${sum%-}${TAR_FILENAME}"; fi' < "$backup_dir/$file_name" > "$checksum_path"
+			status="$?"
+			;;
+		zip)
+			tmp_dir=$(mktemp -d -t bak-zipchecksum-XXXXXXXXXXXXXXX)
+			cd $tmp_dir
+			unzip -qq "$backup_dir/$file_name"
+			find -type f -exec $checksum_command '{}' \; > "$checksum_path"
+			status="$?"
+			sed -i s!\*\./!*!g "$checksum_path"
+			cd - &>/dev/null
+			rm -rf $tmp_dir
+			;;
+		*) print "${bold} ${red}::${normal}${bold} Failed to compute checksum: unsupported archive type (use tar-gz, tar-xz, tar-zst, tar-bz, zip) ${normal}"; exit 1;;
+	esac
+
+	# Check if it worked and tell the user
+	if [[ 0 == "$status" ]]
+	then
+		print "${bold} ${green}::${normal}${bold} Checksums computed successfully; checksums located at ${cyan}$checksum_path${normal}${bold}.${normal}"
+	else
+		print "${bold} ${red}::${normal}${bold} Checksum computation failed! ${normal}"
+		exit 2
+	fi
+
+	# Done:
+}
+
+# Print the header first
+print "${bold}${magenta} bak 0.1.0 ${normal}"
+
+# Then run
+main $*

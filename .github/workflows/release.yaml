@@ -1,0 +1,55 @@
+name: Release
+
+# This workflow must be started manually
+on: workflow_dispatch
+
+# Build and then upload a release
+jobs:
+  release:
+    name: Build binary packages
+    # Run the job on an instance of MacOS (not linux because we need
+    # MacOS to build an osxpkg)
+    runs-on: macos-latest
+    steps:
+      # `git clone` the repo
+      - name: Check out repo
+        uses: actions/checkout@v1
+      # Setup ruby
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.0
+      # Install the fpm gem to build packages
+      - name: Install fpm
+        run: gem install fpm
+      # Install fpm dependencies
+      - name: Install fpm dependencies
+        run: scripts/prep-build-env
+      # Build the binaries
+      - name: Build binaries using fpm
+        run: scripts/dist
+      # Get the version number from the release tag
+      - name: Get version number for release tag
+        id: version-number
+        run: echo "::set-output name=version::$(cat version)"
+      # Upload the release
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: |
+            ```
+            == bak ${{ steps.version-number.outputs.version }} ==
+
+            -- [changelog.txt](https://github.com/gamemaker1/bak/blob/main/changelog.txt)
+
+            -- More on installation and usage can be found [here](https://github.com/gamemaker1/bak/#readme).
+            -- Please report any bugs or submit ideas/feature requests [here](https://github.com/gamemaker1/bak/issues).
+
+            -- Thanks for using bak!
+            ```
+          tag_name: ${{ steps.version-number.outputs.version }}
+          name: Bak ${{ steps.version-number.outputs.version }}
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: gamemaker1/bak

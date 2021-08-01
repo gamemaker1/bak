@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+#
+# == prepare env script ==
+#
+# Install stuff required for FPM to run on MacOS [Github actions]
+#
+# Run from project root please!
+# WARNING: The scripts in this folder are written specifically to run on MacOS [via Github Actions]
+#
+
+# The Github Action will already have setup Ruby v3.0.0
+
+# Install fpm dependecies
+# Install rpm to build a .rpm
+brew install rpm
+# Install gtar to build a .pkg.tar.zst
+brew install gnu-tar
+# Install squashfs to build a snap package
+brew install squashfs
+
+# Install fpm itself
+gem install fpm

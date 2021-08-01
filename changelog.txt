@@ -1,0 +1,11 @@
+
+	== changelog ==
+
+	-- 0.1.0 --
+
+	* Initial release; yay!
+	* Supports the -c, -C, -f, -d and -e flags.
+	* Supports creating archives using tar (gzip, xz, zstd, bzip2) and zip.
+	* Supports computing checksums of all files inside the archive using md5, sha1, sha224, sha384, sha256, sha512 and b2.
+	* Binary packages contain the manpage and license along with the program.
+	* Binary packages are built for Debian, RedHat, Arch Linux, Alpine Linux, Snap, FreeBSD, and MacOS, along with a generic tarball.

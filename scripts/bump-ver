@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+#
+# == version bump script ==
+#
+# Finds and replaces the current version with the new one (new one must be 
+# supplied as a command line argument)
+#
+# Run from project root please!
+#
+
+# Get the old version from the version file and the new one as the first argument
+old_version="$(cat version)"
+new_version="$1"
+
+# Error out if the new version is not specified
+if [[ -z "$new_version" ]]
+then
+	echo "Current version: $old_version; please provide the new version as the first argument; i.e.: $0 0.1.1"
+	exit 1
+fi
+
+# Replace all occurrences of the old version with the new one (except in changelog.txt)
+sed -i "s/$old_version/$new_version/g" man/bak.1
+sed -i "s/$old_version/$new_version/g" source/bak
+sed -i "s/$old_version/$new_version/g" readme.txt
+sed -i "s/$old_version/$new_version/g" version

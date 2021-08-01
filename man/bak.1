@@ -1,0 +1,47 @@
+.TH BAK "1" "July 2021" "bak 0.1.0" "User Commands"
+.SH NAME
+bak \- manual page for bak 0.1.0
+.SH DESCRIPTION
+.IP
+USAGE: bak [options] <files/dirs to backup>...
+.HP
+\fB\-h\fR, \fB\-\-help\fR
+.IP
+Print this help menu and exit
+.HP
+\fB\-v\fR, \fB\-\-version\fR
+.IP
+Print the version number and exit
+.TP
+\fB\-c\fR, \fB\-\-compress\-using\fR <format>
+[default: tar\-gz] tar\-gz, tar\-xz, tar\-zst, tar\-bz, zip
+.IP
+Compression format to use while creating the backup
+.TP
+\fB\-C\fR, \fB\-\-compute\-checksums\-using\fR <type>
+[default: sha256] md5, sha1, sha224, sha384, sha256, sha512, b2
+.IP
+Compute checksums for all files in the archive
+.TP
+\fB\-f\fR, \fB\-\-file\-name\fR <file\-name>
+[default: <date>.bak.<extension>]
+.IP
+Specify the name of the created backup file
+.TP
+\fB\-d\fR, \fB\-\-backup\-directory\fR <path\-to\-dir>
+[default: ~/Backups]
+.IP
+Specify the path to directory to put the backup file in
+.HP
+\fB\-e\fR, \fB\-\-exclude\-pattern\fR <file/dir name/pattern to exclude>
+.IP
+Specify patterns or names of files/dirs to exclude from the archive; if you want them
+to be ignored recursively (across subdirectories), make sure you prefix it with '**/'
+.SH "SEE ALSO"
+.IP
+You can find the source for this program on GitHub: https://github.com/gamemaker1/bak/
+.SH "OTHER"
+.IP
+Made by Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>
+.IP
+This program is distributed under the AGPL 3.0 license.
