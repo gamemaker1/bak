@@ -162,8 +162,8 @@ function main {
 			do
 				compress_command+=" --exclude $exclude_pattern"
 			done
-			compress_command+=" --create --force-local --gzip -f"
-			compress_command+=" '$backup_dir/$file_name' ${files_to_backup[@]}"
+			compress_command+=" --create --gzip -f"
+			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
 			;;
 		tar-xz)
 			compress_command="tar"
@@ -171,7 +171,7 @@ function main {
 			do
 				compress_command+=" --exclude $exclude_pattern"
 			done
-			compress_command+=" --create --force-local --xz -f"
+			compress_command+=" --create --xz -f"
 			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
 			;;
 		tar-zst)
@@ -180,7 +180,7 @@ function main {
 			do
 				compress_command+=" --exclude $exclude_pattern"
 			done
-			compress_command+=" --create --force-local --zstd -f"
+			compress_command+=" --create --zstd -f"
 			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
 			;;
 		tar-bz)
@@ -189,7 +189,7 @@ function main {
 			do
 				compress_command+=" --exclude $exclude_pattern"
 			done
-			compress_command+=" --create --force-local --bzip2 -f"
+			compress_command+=" --create --bzip2 -f"
 			compress_command+=" $backup_dir/$file_name ${files_to_backup[@]}"
 			;;
 		zip)
