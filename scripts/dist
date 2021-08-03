@@ -17,109 +17,55 @@
 # WARNING: The scripts in this folder are written specifically to run on MacOS [via Github Actions]
 #
 
+# NOTE: Most of the FPM options can be found it the .fpm file in the root of the project.
+
 # Ensure the `dist` directory exists
 rm -rf dist
 mkdir -p dist
 
 # Debian
-fpm --log error \
+fpm \
 	-s dir -t deb \
 	-p dist/bak-$(cat version)-1-any.deb \
-	--name bak \
-	--license agpl3 \
 	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	--deb-changelog changelog.txt \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--deb-changelog changelog.txt
 
 # RedHat
-fpm --log error \
+fpm \
 	-s dir -t rpm \
 	-p dist/bak-$(cat version)-1-any.rpm \
-	--name bak \
-	--license agpl3 \
 	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	--rpm-changelog changelog.txt \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--rpm-changelog changelog.txt
 
 # Arch Linux
-fpm --log error \
+fpm \
 	-s dir -t pacman \
 	-p dist/bak-$(cat version)-1-any.pkg.tar.zst \
-	--name bak \
-	--license agpl3 \
-	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--version $(cat version)
 
 # Alpine Linux
-fpm --log error \
+fpm \
 	-s dir -t apk \
 	-p dist/bak-$(cat version)-1-any.apk \
-	--name bak \
-	--license agpl3 \
-	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--version $(cat version)
 
 # Snap
-fpm --log error \
+fpm \
 	-s dir -t snap \
 	-p dist/bak-$(cat version)-1-any.snap \
-	--name bak \
-	--license agpl3 \
-	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--version $(cat version)
 
 # FreeBSD
-fpm --log error \
+fpm \
 	-s dir -t freebsd \
 	-p dist/bak-$(cat version)-1-any.freebsd \
-	--name bak \
-	--license agpl3 \
-	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--version $(cat version)
 
 # MacOS
-fpm --log error \
+fpm \
 	-s dir -t osxpkg \
 	-p dist/bak-$(cat version)-1-any.pkg \
-	--name bak \
-	--license agpl3 \
-	--version $(cat version) \
-	--architecture all \
-	--depends bash --depends coreutils --depends tar --depends zip --depends unzip \
-	--description "A backup tool written in bash" \
-	--url "https://github.com/gamemaker1/bak" \
-	--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>" \
-	source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+	--version $(cat version)
 
 # Generic
 tar -czf dist/bak-$(cat version)-1-any.tar.gz man source changelog.txt license.txt readme.txt version

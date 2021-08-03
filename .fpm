@@ -1,0 +1,9 @@
+--name bak
+--license agpl3
+--architecture all
+--depends bash --depends coreutils --depends tar --depends zip --depends unzip
+--description "A backup tool written in bash"
+--url "https://github.com/gamemaker1/bak"
+--maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>"
+
+source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
