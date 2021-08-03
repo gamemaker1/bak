@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 
-# == bak 0.1.0 ==
+# == bak 0.1.1 ==
 # 
 # A backup tool (written in bash)
 # 
@@ -289,7 +289,7 @@ function main {
 }
 
 # Print the header first
-print "${bold}${magenta} bak 0.1.0 ${normal}"
+print "${bold}${magenta} bak 0.1.1 ${normal}"
 
 # Then run
 main $*

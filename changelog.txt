@@ -1,6 +1,10 @@
 
 	== changelog ==
 
+	-- 0.1.1 --
+
+	* Fixed bug where tar used to error out when using tar-gz compression format.
+
 	-- 0.1.0 --
 
 	* Initial release; yay!
