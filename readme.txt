@@ -1,5 +1,5 @@
 
-	== bak 0.1.1 ==
+	== bak unreleased ==
 
 	A backup tool (written in bash)
 
@@ -56,7 +56,7 @@
 	This project is licensed under AGPL 3.0. A copy of the license can be found
 	in the /license.txt file.
 
-	bak 0.1.1 - A backup tool written in bash
+	bak unreleased - A backup tool written in bash
 	Copyright (C) 2021 Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>
 
 	This program is free software: you can redistribute it and/or modify
