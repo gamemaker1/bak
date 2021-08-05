@@ -25,45 +25,45 @@ mkdir -p dist
 
 # Debian
 fpm \
-	-s dir -t deb \
+	-t deb \
 	-p dist/bak-$(cat version)-1-any.deb \
 	--version $(cat version) \
 	--deb-changelog changelog.txt
 
 # RedHat
 fpm \
-	-s dir -t rpm \
+	-t rpm \
 	-p dist/bak-$(cat version)-1-any.rpm \
 	--version $(cat version) \
 	--rpm-changelog changelog.txt
 
 # Arch Linux
 fpm \
-	-s dir -t pacman \
+	-t pacman \
 	-p dist/bak-$(cat version)-1-any.pkg.tar.zst \
 	--version $(cat version)
 
 # Alpine Linux
 fpm \
-	-s dir -t apk \
+	-t apk \
 	-p dist/bak-$(cat version)-1-any.apk \
 	--version $(cat version)
 
 # Snap
 fpm \
-	-s dir -t snap \
+	-t snap \
 	-p dist/bak-$(cat version)-1-any.snap \
 	--version $(cat version)
 
 # FreeBSD
 fpm \
-	-s dir -t freebsd \
+	-t freebsd \
 	-p dist/bak-$(cat version)-1-any.freebsd \
 	--version $(cat version)
 
 # MacOS
 fpm \
-	-s dir -t osxpkg \
+	-t osxpkg \
 	-p dist/bak-$(cat version)-1-any.pkg \
 	--version $(cat version)
 

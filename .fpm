@@ -1,3 +1,4 @@
+-s dir
 --name bak
 --license agpl3
 --architecture all
