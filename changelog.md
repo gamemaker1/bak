@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased](https://github.com/gamemaker1/bak/tree/main)
 
+## [0.2.0](https://github.com/gamemaker1/bak/releases/tag/0.2.0) - 05 August 2021
+
 ### Changed
 
 - Convert .txt files to .md files
