@@ -32,19 +32,27 @@ jobs:
       - name: Get version number for release tag
         id: version-number
         run: echo "::set-output name=version::$(cat version)"
+      - name: Prepare release notes file
+        run: |
+          touch release_notes.md
+          echo "# bak ${{ steps.version-number.outputs.version }}" > release_notes.md
+      - name: Extract release notes from the changelog
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+        with:
+          changelog_file: changelog.md
+          release_notes_file: release_notes.md
+      - name: Add footer to the release notes
+        run: |
+          echo "\n\n"
+          echo "### More on installation and usage can be found [here](https://github.com/gamemaker1/bak/#readme)." >> release_notes.md
+          echo "### Please report any bugs or submit ideas/feature requests [here](https://github.com/gamemaker1/bak/issues)." >> release_notes.md
+          echo "### Thanks for using bak!" >> release_notes.md
       # Upload the release
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          body: |
-            # bak ${{ steps.version-number.outputs.version }}
-
-            - Changelog: https://github.com/gamemaker1/bak/blob/main/changelog.md
-
-            - More on installation and usage can be found [here](https://github.com/gamemaker1/bak/#readme).
-            - Please report any bugs or submit ideas/feature requests [here](https://github.com/gamemaker1/bak/issues).
-
-            ### Thanks for using bak!
+          body_path: release_notes.md
           tag_name: ${{ steps.version-number.outputs.version }}
           name: Bak ${{ steps.version-number.outputs.version }}
           files: dist/*
