@@ -1,4 +1,4 @@
-# bak 0.1.1
+# bak 0.2.0
 
 A backup tool (written in bash)
 

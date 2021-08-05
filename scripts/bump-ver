@@ -20,7 +20,7 @@ then
 	exit 1
 fi
 
-# Replace all occurrences of the old version with the new one (except in changelog.txt)
+# Replace all occurrences of the old version with the new one (except in changelog.md)
 sed -i "s/$old_version/$new_version/g" man/bak.1
 sed -i "s/$old_version/$new_version/g" source/bak
 sed -i "s/$old_version/$new_version/g" readme.md
