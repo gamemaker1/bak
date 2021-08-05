@@ -19,7 +19,7 @@
 # 
 # -c, --compress-using               [default: tar-gz] tar-gz, tar-xz, tar-zst, tar-bzip2, zip
 # 	Compression format to use while creating the backup
-# -C, --compute-checksums-using     [default: sha256] md5, sha1, sha224, sha384, sha256, sha512, b2
+# -C, --compute-checksums-using     [default: sha256] none, md5, sha1, sha224, sha384, sha256, sha512, b2
 # 	Compute checksums for all files in the archive
 # -f, --file-name                    [default: <date>.bak.<extension>]
 # 	Name of resulting backup file
@@ -69,31 +69,31 @@ function help {
 	print "${bold}${yellow} USAGE${normal}${bold}: bak [options] <files/dirs to backup>... ${normal}"
 	print ""
 
-	print "${bold}${cyan}  -h, --help${normal}"
+	print "${bold}${blue}  -h, --help${normal}"
 	print "     Print this help menu and exit"
-	print "${bold}${cyan}  -v, --version${normal}"
+	print "${bold}${blue}  -v, --version${normal}"
 	print "     Print the version number and exit"
 
 	print ""
 
-	print "${bold}${cyan}  -c, --compress-using${normal}${bold} <format>          ${green}[default: tar-gz]${normal} ${bold}tar-gz, tar-xz, tar-zst, tar-bz, zip${normal}"
+	print "${bold}${blue}  -c, --compress-using${normal}${bold} <format>          ${green}[default: tar-gz]${normal} ${bold}tar-gz, tar-xz, tar-zst, tar-bz, zip${normal}"
 	print "     Compression format to use while creating the backup"
 
-	print "${bold}${cyan}  -C, --compute-checksums-using${normal}${bold} <type>  ${green}[default: sha256]${normal} ${bold}md5, sha1, sha224, sha384, sha256, sha512, b2${normal}"
+	print "${bold}${blue}  -C, --compute-checksums-using${normal}${bold} <type>  ${green}[default: sha256]${normal} ${bold}none, md5, sha1, sha224, sha384, sha256, sha512, b2${normal}"
 	print "     Compute checksums for all files in the archive"
 
-	print "${bold}${cyan}  -f, --file-name${normal}${bold} <file-name>            ${green}[default: <date>.bak.<extension>]${normal}"
+	print "${bold}${blue}  -f, --file-name${normal}${bold} <file-name>            ${green}[default: <date>.bak.<extension>]${normal}"
 	print "     Specify the name of the created backup file"
 
-	print "${bold}${cyan}  -d, --backup-directory${normal}${bold} <path-to-dir>   ${green}[default: $HOME/Backups]${normal}"
+	print "${bold}${blue}  -d, --backup-directory${normal}${bold} <path-to-dir>   ${green}[default: $HOME/Backups]${normal}"
 	print "     Specify the path to directory to put the backup file in"
 
-	print "${bold}${cyan}  -e, --exclude-pattern${normal}${bold} <file/dir name/pattern to exclude>${normal}"
+	print "${bold}${blue}  -e, --exclude-pattern${normal}${bold} <file/dir name/pattern to exclude>${normal}"
 	print "     Specify patterns or names of files/dirs to exclude from the archive; if you want them"
 	print "     to be ignored recursively (across subdirectories), make sure you prefix it with '**/'"
 
 	print ""
-	print "${bold}  For more information, view the man page for this program (${cyan}man bak${normal}${bold}).${normal}"
+	print "${bold}  For more information, view the man page for this program (${blue}man bak${normal}${bold}).${normal}"
 }
 
 # Main function
@@ -146,7 +146,13 @@ function main {
 	# Print out a summary
 	print "${bold} ${blue}::${normal}${bold} Backup summary: ${normal}"
 	print "${bold}   ${yellow}*${normal}${bold} Path to backup file    :${normal} $backup_dir/$file_name"
-	print "${bold}   ${yellow}*${normal}${bold} Path to checksum file  :${normal} $backup_dir/$file_name.${checksum_type}sum"
+	
+	# Print the checksum file path only if checksums are enabled
+	if ! echo "$checksum_type" | grep -iqF no
+	then
+		print "${bold}   ${yellow}*${normal}${bold} Path to checksum file  :${normal} $backup_dir/$file_name.${checksum_type}sum"
+	fi
+	
 	print "${bold}   ${yellow}*${normal}${bold} Compression format     :${normal} $compression_format"
 	print "${bold}   ${yellow}*${normal}${bold} Checksum type          :${normal} $checksum_type"
 	print "${bold}   ${yellow}*${normal}${bold} Files to backup        :${normal} ${files_to_backup[@]}"
@@ -215,7 +221,7 @@ function main {
 	# Check if it worked and tell the user
 	if [[ 0 == "$?" ]]
 	then
-		print "${bold} ${green}::${normal}${bold} Backup completed successfully; backup located at ${cyan}$backup_dir/$file_name${normal}${bold}.${normal}"
+		print "${bold} ${green}::${normal}${bold} Backup completed successfully; backup located at ${normal}${blue}$backup_dir/$file_name${normal}${bold}.${normal}"
 	else
 		print "${bold} ${red}::${normal}${bold} Backup failed! ${normal}"
 		exit 2
@@ -223,6 +229,14 @@ function main {
 
 	# Checksums
 	print "${bold} ${blue}::${normal}${bold} Computing checksums... ${normal}"
+
+	# Check if checksums are to be computed
+	if echo "$checksum_type" | grep -iqF no
+	then
+		# If not, exit
+		print "${bold} ${yellow}::${normal}${bold} Checksums turned off; skipping! ${normal}"
+		exit
+	fi
 
 	# Store the checksum in a *.<type>sum file along with the backup file
 	checksum_path="$backup_dir/$file_name.${checksum_type}sum"
@@ -279,7 +293,7 @@ function main {
 	# Check if it worked and tell the user
 	if [[ 0 == "$status" ]]
 	then
-		print "${bold} ${green}::${normal}${bold} Checksums computed successfully; checksums located at ${cyan}$checksum_path${normal}${bold}.${normal}"
+		print "${bold} ${green}::${normal}${bold} Checksums computed successfully; checksums located at ${normal}${blue}$checksum_path${normal}${bold}.${normal}"
 	else
 		print "${bold} ${red}::${normal}${bold} Checksum computation failed! ${normal}"
 		exit 2
@@ -289,7 +303,7 @@ function main {
 }
 
 # Print the header first
-print "${bold}${magenta} bak unreleased ${normal}"
+print "${bold}${magenta} bak 0.2.0 ${normal}"
 
 # Then run
 main $*
