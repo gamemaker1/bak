@@ -37,16 +37,14 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: |
-            ```
-            == bak ${{ steps.version-number.outputs.version }} ==
+            # bak ${{ steps.version-number.outputs.version }}
 
-            -- [changelog.txt](https://github.com/gamemaker1/bak/blob/main/changelog.txt)
+            - Changelog: https://github.com/gamemaker1/bak/blob/main/changelog.md
 
-            -- More on installation and usage can be found [here](https://github.com/gamemaker1/bak/#readme).
-            -- Please report any bugs or submit ideas/feature requests [here](https://github.com/gamemaker1/bak/issues).
+            - More on installation and usage can be found [here](https://github.com/gamemaker1/bak/#readme).
+            - Please report any bugs or submit ideas/feature requests [here](https://github.com/gamemaker1/bak/issues).
 
-            -- Thanks for using bak!
-            ```
+            ### Thanks for using bak!
           tag_name: ${{ steps.version-number.outputs.version }}
           name: Bak ${{ steps.version-number.outputs.version }}
           files: dist/*
