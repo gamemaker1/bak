@@ -6,9 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-### Changes
+### Changed
 
 - Convert .txt files to .md files
+- Add a release note generation step to the release workflow
+
+### Added
+
+- Allow for skipping checksum generation using the `-C none` option.
 
 ## 0.1.1 - 03 August 2021
 
