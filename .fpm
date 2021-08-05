@@ -7,4 +7,4 @@
 --url "https://github.com/gamemaker1/bak"
 --maintainer "Vedant K (gamemaker1) <gamemaker0042 at gmail dot com>"
 
-source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.txt=/usr/share/licenses/bak/LICENSE
+source/bak=/usr/bin/bak man/bak.1=/usr/share/man/man1/bak.1 license.md=/usr/share/licenses/bak/LICENSE

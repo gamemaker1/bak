@@ -28,14 +28,14 @@ fpm \
 	-t deb \
 	-p dist/bak-$(cat version)-1-any.deb \
 	--version $(cat version) \
-	--deb-changelog changelog.txt
+	--deb-changelog changelog.md
 
 # RedHat
 fpm \
 	-t rpm \
 	-p dist/bak-$(cat version)-1-any.rpm \
 	--version $(cat version) \
-	--rpm-changelog changelog.txt
+	--rpm-changelog changelog.md
 
 # Arch Linux
 fpm \
@@ -68,4 +68,4 @@ fpm \
 	--version $(cat version)
 
 # Generic
-tar -czf dist/bak-$(cat version)-1-any.tar.gz man source changelog.txt license.txt readme.txt version
+tar -czf dist/bak-$(cat version)-1-any.tar.gz man source changelog.md license.md readme.md version
